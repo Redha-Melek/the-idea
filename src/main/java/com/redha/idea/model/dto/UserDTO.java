@@ -15,10 +15,6 @@ public class UserDTO implements Serializable{
 
     private String name;
     private List<IdeaDTO> ideas;
-    public UserDTO(User user) {
-        this.name = user.getName();
-        this.ideas = user.getIdeas().stream().map(IdeaDTO::new).collect(Collectors.toList());
-    }
 }
 //@Getter
 //@Setter

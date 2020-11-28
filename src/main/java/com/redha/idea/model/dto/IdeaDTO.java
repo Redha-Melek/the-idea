@@ -16,9 +16,4 @@ public class IdeaDTO implements Serializable {
     private String description;
 
     private Set<AuthorDTO> authors;
-
-    public IdeaDTO(Idea idea) {
-        this.description = idea.getDescription();
-        this.authors = idea.getAuthors().stream().map(AuthorDTO::new).collect(Collectors.toSet());
-    }
 }

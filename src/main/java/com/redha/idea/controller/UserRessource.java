@@ -1,12 +1,10 @@
 package com.redha.idea.controller;
 
-import com.redha.idea.model.Idea;
+import com.redha.idea.mapper.UserMapper;
 import com.redha.idea.model.User;
-import com.redha.idea.model.dto.IdeaDTO;
 import com.redha.idea.model.dto.UserDTO;
-import com.redha.idea.repository.IdeaRepository;
-import com.redha.idea.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.redha.idea.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,42 +16,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-
+@AllArgsConstructor
 @RestController
 @RequestMapping("/user")
 public class UserRessource {
 
-    @Autowired
-    UserRepository userRepository;
-
-    @GetMapping("/{id}/ideas")
-    public ResponseEntity<Optional<UserDTO>> getUserWithIdeas(@PathVariable Long id) {
-
-        return new ResponseEntity<>(userRepository.findById(id).map(UserDTO::new)
-                , HttpStatus.OK);
-    }
+    UserService userService;
+    UserMapper userMapper;
 
     @GetMapping("/{id}")
-    public ResponseEntity<Optional<UserDTO>> getUser(@PathVariable Long id) {
-
-        return new ResponseEntity<>(userRepository.findOneById(id).map(UserDTO::new)
+    public ResponseEntity<UserDTO> getUserWithIdeas(@PathVariable Long id) {
+        Optional<User> user = userService.findById(id);
+        if (user.isEmpty()) {
+            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userMapper.toDto(user.get())
                 , HttpStatus.OK);
     }
 
     @GetMapping("/")
     public ResponseEntity<List<UserDTO>> getUsersWithIdeas() {
-        List<User> userEntities = userRepository.findAll();
-        List<UserDTO> userDTOS = userEntities.stream()
-                .map(UserDTO::new).collect(Collectors.toList());
+        List<User> userEntities = userService.findAll();
+        if (userEntities.isEmpty()) {
+            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+        }
+        List<UserDTO> userDTOS = userMapper.toDto(userEntities);
         return new ResponseEntity<>(userDTOS, HttpStatus.OK);
     }
 
     @PostMapping("/")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
-        return new ResponseEntity<>(userRepository.save(user), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

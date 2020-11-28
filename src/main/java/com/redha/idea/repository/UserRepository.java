@@ -10,6 +10,4 @@ import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query(value = "From User u")
-    Optional<User> findOneById(Long id);
 }
