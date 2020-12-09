@@ -68,7 +68,13 @@
 			<version>${org.mapstruct.version}</version>
 			<scope>provided</scope>
 		</dependency>
-    </dependencies>
+		<!-- https://mvnrepository.com/artifact/org.zalando/problem-spring-web -->
+		<dependency>
+			<groupId>org.zalando</groupId>
+			<artifactId>problem-spring-web</artifactId>
+			<version>0.26.2</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

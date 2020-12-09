@@ -2,33 +2,35 @@ package com.redha.idea.model;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.HashSet;
 import java.util.Set;
 import java.io.Serializable;
 
+import static javax.persistence.CascadeType.*;
+
 @Getter
 @Setter
+@EqualsAndHashCode(of= {"name"})
+@ToString(of= {"name"})
 @Entity
-@Table(name = "author")
+@Table(name = "appuser")
 public class User implements Serializable{
 
     @Id
     @GeneratedValue(strategy= GenerationType.AUTO)
     private Long id;
 
-    @NotEmpty(message = "you have to specify the name of the author")
+    @Column(unique=true)
+    @NotEmpty(message = "you have to specify the name of the user")
     private String name;
 
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "idea_author", //
-            joinColumns = @JoinColumn(name = "author_id", nullable = false, updatable = false), //
-            inverseJoinColumns = @JoinColumn(name = "idea_id", nullable = false, updatable = false))
-    private Set<Idea> ideas;
 }
 //@Getter
 //@Setter

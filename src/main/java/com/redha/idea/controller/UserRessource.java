@@ -1,15 +1,19 @@
 package com.redha.idea.controller;
 
-import com.redha.idea.mapper.UserMapper;
-import com.redha.idea.model.User;
+import com.redha.idea.exception.BadRequestAlertException;
 import com.redha.idea.model.dto.UserDTO;
 import com.redha.idea.service.UserService;
+import com.redha.idea.utilities.PaginationUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.util.HashMap;
@@ -17,38 +21,66 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@AllArgsConstructor
+import static com.redha.idea.constant.ApiConstants.SUBPATH_ID;
+import static com.redha.idea.constant.ApiConstants.USER_ROOT;
+
+
 @RestController
-@RequestMapping("/user")
+@RequestMapping(USER_ROOT)
+@AllArgsConstructor
 public class UserRessource {
 
-    UserService userService;
-    UserMapper userMapper;
+    private final String ENTITY_NAME = "User";
+    private final UserService userService;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<UserDTO> getUserWithIdeas(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
-        if (user.isEmpty()) {
-            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+    @GetMapping(SUBPATH_ID)
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+        Optional<UserDTO> userDTO = userService.findById(id);
+        if (userDTO.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(userMapper.toDto(user.get())
+        return new ResponseEntity<>(userDTO.get()
                 , HttpStatus.OK);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<UserDTO>> getUsersWithIdeas() {
-        List<User> userEntities = userService.findAll();
-        if (userEntities.isEmpty()) {
-            return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getUsers(Pageable pageable) {
+        Page<UserDTO> page = userService.findAll(pageable);
+        if (page != null && page.getTotalElements() <= 0) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<UserDTO> userDTOS = userMapper.toDto(userEntities);
-        return new ResponseEntity<>(userDTOS, HttpStatus.OK);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
-    @PostMapping("/")
-    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+    @PostMapping
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO userDTO) {
+        if (userDTO.getId() != null) {
+            throw new BadRequestAlertException("A new user cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        return new ResponseEntity<>(userService.save(userDTO), HttpStatus.CREATED);
+    }
 
-        return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
+    @PutMapping
+    public ResponseEntity<UserDTO> updateUser(@Valid @RequestBody UserDTO userDTO) {
+        if (userDTO.getId() == null) {
+            throw new BadRequestAlertException("An existing user cannot already have an ID", ENTITY_NAME, "idexists");
+        }
+        Optional<UserDTO> user = userService.findById(userDTO.getId());
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(userService.save(userDTO), HttpStatus.OK);
+    }
+
+    @DeleteMapping(SUBPATH_ID)
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        Optional<UserDTO> user = userService.findById(id);
+        if (user.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

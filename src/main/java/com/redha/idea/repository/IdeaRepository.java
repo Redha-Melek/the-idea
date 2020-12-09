@@ -1,14 +1,13 @@
 package com.redha.idea.repository;
 
 import com.redha.idea.model.Idea;
-import org.springframework.data.jpa.repository.EntityGraph;
+import com.redha.idea.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.Optional;
 
 public interface IdeaRepository extends JpaRepository<Idea, Long> {
 
-    Optional<Idea> findOneWithAuthorsById(Long id);
-
+    Page<Idea> findByAuthorsContaining(User author, Pageable pageable);
 
 }

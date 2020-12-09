@@ -1,13 +1,19 @@
 package com.redha.idea.model.dto;
 
 
-import lombok.Data;
+import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode(of= {"name"})
+@ToString(of= {"name"})
 public class AuthorDTO implements Serializable{
 
+    private Long id;
+    @NotEmpty(message = "you have to specify the name of the authordto")
     private String name;
 
 }

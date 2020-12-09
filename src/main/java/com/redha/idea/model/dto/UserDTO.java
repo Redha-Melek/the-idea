@@ -1,22 +1,19 @@
 package com.redha.idea.model.dto;
 
 
-import com.redha.idea.model.User;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 @Getter
 @Setter
-public class UserDTO implements Serializable{
+@EqualsAndHashCode(of= {"name"})
+@ToString(of= {"name"})
+public class UserDTO implements Serializable {
 
+    private Long id;
+    @NotEmpty(message = "you have to specify the name of the userdto")
     private String name;
-    private List<IdeaDTO> ideas;
 }
-//@Getter
-//@Setter
-//@EqualsAndHashCode(of = "id")
-//@ToString(includeFieldNames = false)
