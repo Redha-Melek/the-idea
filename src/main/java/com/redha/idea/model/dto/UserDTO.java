@@ -1,11 +1,8 @@
 package com.redha.idea.model.dto;
 
-
 import lombok.*;
-
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.util.Set;
 
 @Getter
 @Setter
