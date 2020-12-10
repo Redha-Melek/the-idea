@@ -1,5 +1,6 @@
 package com.redha.idea.service.impl;
 
+import com.redha.idea.exception.BadRequestAlertException;
 import com.redha.idea.mapper.IdeaMapper;
 import com.redha.idea.model.Idea;
 import com.redha.idea.model.User;
@@ -41,7 +42,7 @@ public class IdeaServiceImpl implements IdeaService {
     public Page<IdeaDTO> findByUser(String name, Pageable pageable) {
         Optional<User> user = userRepository.findOneByName(name);
         if(user.isEmpty()) {
-            return null;
+            throw new BadRequestAlertException("The user with the name " + name + " does not exist", "idea", "ideaUserNotexist");
         }
         return ideaRepository.findByAuthorsContaining(user.get(), pageable)
                 .map(ideaMapper::toDto);
