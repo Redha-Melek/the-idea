@@ -55,6 +55,8 @@ public class UserRessource {
         if (userDTO.getId() != null) {
             throw new BadRequestAlertException("A new user cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        userService.findByName(userDTO.getName()).ifPresent(value -> {throw new BadRequestAlertException("An existing user has the same name", ENTITY_NAME, "nameexists");});
+
         UserDTO userCreated = userService.save(userDTO);
         return ResponseEntity.created(new URI("/user/" + userCreated.getId())).body(userCreated);
     }
@@ -68,7 +70,12 @@ public class UserRessource {
         if (user.isEmpty()) {
             throw new NotFoundAlertException("The user not founded", ENTITY_NAME);
         }
-        return ResponseEntity.ok().body(userService.save(userDTO));
+        Optional<UserDTO> userExistsName = userService.findByName(userDTO.getName());
+        if (userExistsName.isPresent() &&
+                userExistsName.get().getId() != user.get().getId()) {
+            throw new BadRequestAlertException("An existing user have the same name", ENTITY_NAME, "nameexists");
+        }
+        return ResponseEntity.ok().body(userService.update(userDTO));
     }
 
     @DeleteMapping(SUBPATH_ID)

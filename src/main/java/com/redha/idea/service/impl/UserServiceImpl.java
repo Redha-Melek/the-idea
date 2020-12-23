@@ -27,6 +27,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<UserDTO> findByName(String name) {
+        return userRepository.findOneByName(name).map(userMapper::toDto);
+    }
+
+    @Override
     public Page<UserDTO> findAll(Pageable pageable) {
         return userRepository.findAll(pageable)
                 .map(userMapper::toDto);
@@ -36,6 +41,20 @@ public class UserServiceImpl implements UserService {
     public UserDTO save(UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         return Optional.of(userRepository.save(user))
+                .map(userMapper::toDto).get();
+    }
+
+    @Override
+    public UserDTO update(UserDTO userDTO) {
+
+
+        User userToPersist = Optional.of(userRepository.findById(userDTO.getId())).filter(Optional::isPresent).map(Optional::get)
+                .map(user -> {
+                    user.setName(userDTO.getName());
+                    return user;
+                }).get();
+
+        return Optional.of(userRepository.save(userToPersist))
                 .map(userMapper::toDto).get();
     }
 

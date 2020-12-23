@@ -60,8 +60,6 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler {
     }
 
     // error handle for @Valid
-    @ResponseBody
-    @ExceptionHandler(MethodArgumentNotValidException.class)
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,

@@ -1,5 +1,7 @@
 package com.redha.idea.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redha.idea.exception.BadRequestAlertException;
 import com.redha.idea.exception.NotFoundAlertException;
 import com.redha.idea.model.dto.IdeaDTO;
@@ -29,6 +31,7 @@ public class IdeaRessource {
 
     private final String ENTITY_NAME = "Idea";
     private final IdeaService ideaService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping(SUBPATH_ID)
     public ResponseEntity<IdeaDTO> getIdea(@PathVariable Long id) {
@@ -64,6 +67,28 @@ public class IdeaRessource {
         if (ideaDTO.getId() != null) {
             throw new BadRequestAlertException("A new idea cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        IdeaDTO ideaCreated = ideaService.save(ideaDTO);
+        return ResponseEntity.created(new URI("/idea/" + ideaCreated.getId())).body(ideaCreated);
+    }
+
+    @PostMapping("/test")
+    public ResponseEntity<IdeaDTO> test() throws URISyntaxException, JsonProcessingException {
+
+        String ideaJson = "{\n" +
+                "    \"description\" : \"hello\",\n" +
+                "    \"authors\" : [\n" +
+                "        {\n" +
+                "            \"id\" : \"7\",\n" +
+                "            \"name\": \"hiho\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\" : \"8\",\n" +
+                "            \"name\": \"hha\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        IdeaDTO ideaDTO = objectMapper.readValue(ideaJson, IdeaDTO.class);
+        
         IdeaDTO ideaCreated = ideaService.save(ideaDTO);
         return ResponseEntity.created(new URI("/idea/" + ideaCreated.getId())).body(ideaCreated);
     }

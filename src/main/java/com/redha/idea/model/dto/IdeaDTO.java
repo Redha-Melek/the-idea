@@ -18,6 +18,6 @@ public class IdeaDTO implements Serializable {
     private String description;
 
     @Valid
-    @NotEmpty(message = "You have to specify the authordto")
-    private Set<AuthorDTO> authors;
+    @NotEmpty(message = "You have to specify the userdto")
+    private Set<UserDTO> authors;
 }

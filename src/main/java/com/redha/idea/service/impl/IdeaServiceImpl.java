@@ -4,8 +4,8 @@ import com.redha.idea.exception.BadRequestAlertException;
 import com.redha.idea.mapper.IdeaMapper;
 import com.redha.idea.model.Idea;
 import com.redha.idea.model.User;
-import com.redha.idea.model.dto.AuthorDTO;
 import com.redha.idea.model.dto.IdeaDTO;
+import com.redha.idea.model.dto.UserDTO;
 import com.redha.idea.repository.IdeaRepository;
 import com.redha.idea.repository.UserRepository;
 import com.redha.idea.service.IdeaService;
@@ -23,6 +23,7 @@ import java.util.Optional;
 @AllArgsConstructor
 public class IdeaServiceImpl implements IdeaService {
 
+    private static final String ENTITY_NAME = "idea";
     private final IdeaRepository ideaRepository;
     private final UserRepository userRepository;
     private final IdeaMapper ideaMapper;
@@ -52,12 +53,12 @@ public class IdeaServiceImpl implements IdeaService {
     public IdeaDTO save(IdeaDTO ideaDTO) {
         Idea idea = ideaMapper.toEntity(ideaDTO);
         idea.setAuthors(new HashSet<>());
-        for(AuthorDTO authorDTO : ideaDTO.getAuthors()) {
-            Optional<User> user = userRepository.findOneByName(authorDTO.getName());
+        for(UserDTO userDTO : ideaDTO.getAuthors()) {
+            Optional<User> user = userRepository.findOneByName(userDTO.getName());
             user.ifPresent(value -> idea.getAuthors().add(value));
         }
         if(idea.getAuthors().isEmpty()) {
-            return null;
+            throw new BadRequestAlertException("The authors provided do not exist",  ENTITY_NAME, "authorsNotexist");
         }
         Idea ideaInserted = ideaRepository.save(idea);
         return ideaMapper.toDto(ideaInserted);

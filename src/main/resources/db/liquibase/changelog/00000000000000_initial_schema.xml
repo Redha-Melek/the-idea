@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:pro="http://www.liquibase.org/xml/ns/pro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/pro http://www.liquibase.org/xml/ns/pro/liquibase-pro-4.1.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.1.xsd">
+    <changeSet author="User (generated)" id="1608741074670-1">
+        <createTable tableName="appuser">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="appuser_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="version" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-2">
+        <createTable tableName="idea">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idea_pkey"/>
+            </column>
+            <column name="description" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-3">
+        <createTable tableName="idea_appuser">
+            <column name="idea_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idea_appuser_pkey"/>
+            </column>
+            <column name="appuser_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="idea_appuser_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-4">
+        <addForeignKeyConstraint baseColumnNames="appuser_id" baseTableName="idea_appuser" constraintName="fk4b753njidolrxc17cgh7s3dl7" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="appuser" validate="true"/>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-5">
+        <addUniqueConstraint columnNames="name" constraintName="uk_ee3cmxp6jvhe7rqksp12a80w5" tableName="appuser"/>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-6">
+        <addForeignKeyConstraint baseColumnNames="idea_id" baseTableName="idea_appuser" constraintName="fk3ha046e72xn1svs5fh3pbslfy" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="idea" validate="true"/>
+    </changeSet>
+    <changeSet author="User (generated)" id="1608741074670-7">
+        <createSequence cacheSize="1" cycle="false" dataType="bigint" incrementBy="1" maxValue="9223372036854775807" minValue="1" sequenceName="hibernate_sequence" startValue="1"/>
+    </changeSet>
+</databaseChangeLog>
